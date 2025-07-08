@@ -38,7 +38,7 @@
     </div>
 </div>
 
-@if (Model != null)
+@if (Model != null && (Model.Name == null || !Model.Name.StartsWith("Check your resume again")))
 {
     <div class="card p-3 mt-4">
         <h3>AI Feedback</h3>
@@ -47,27 +47,22 @@
             <strong>Skills Summary:</strong><br />
             @Html.Raw(Model.SkillsSummary?.Replace("\n", "<br/>"))
         </p>
-
         <p>
             <strong>Strengths:</strong><br />
             @Html.Raw(Model.Strengths?.Replace("\n", "<br/>"))
         </p>
-
         <p>
             <strong>Weaknesses:</strong><br />
             @Html.Raw(Model.Weaknesses?.Replace("\n", "<br/>"))
         </p>
-
         <p>
             <strong>Suggestions:</strong><br />
             @Html.Raw(Model.Suggestions?.Replace("\n", "<br/>"))
         </p>
-
         <p>
             <strong>Suggested Roles:</strong><br />
             @Html.Raw(Model.SuggestedRoles?.Replace("\n", "<br/>"))
         </p>
-
         <div class="mt-3">
             <form asp-action="Save" method="post" class="d-inline">
                 @Html.AntiForgeryToken()
@@ -81,7 +76,6 @@
                 @Html.HiddenFor(m => m.UploadedFileName)
                 <button type="submit" class="btn btn-success">💾 Save</button>
             </form>
-
             <form asp-action="DownloadDocxTemp" method="post" class="d-inline ms-2">
                 @Html.AntiForgeryToken()
                 @Html.HiddenFor(m => m.ResumeText)
@@ -95,4 +89,8 @@
             </form>
         </div>
     </div>
+}
+else if (Model != null && Model.Name != null && Model.Name.StartsWith("Check your resume again"))
+{
+    <div class="alert alert-danger text-center mt-4" style="font-size:1.2em;">@Model.Name</div>
 }
