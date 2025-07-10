@@ -46,7 +46,7 @@ namespace Resume.Controllers
                 try
                 {
                     var resumeEntity = await _geminiService.AnalyzeResumeAsync(resumeText);
-                    if (resumeEntity.Name.StartsWith("Check your file again"))
+                    if (resumeEntity.Name.StartsWith("Check your resume again"))
                     {
                         ModelState.AddModelError("", resumeEntity.Name);
                         return View();
@@ -76,7 +76,7 @@ namespace Resume.Controllers
             if (ext == ".pdf")
             {
                 using var pdf = PdfDocument.Open(stream);
-                resumeTextFromFile = string.Join("\n", pdf.GetPages().Select(p => p.Text));
+                resumeTextFromFile = string.Join("\n", pdf.GetPages().Select(p => p.Text)); // Extracts the text from each page and joins them with newline characters.
             }
             else if (ext == ".docx")
             {
@@ -101,7 +101,6 @@ namespace Resume.Controllers
             try
             {
                 var resumeEntity = await _geminiService.AnalyzeResumeAsync(resumeTextFromFile);
-                // If GeminiService detected a non-resume file, show a user-friendly error
                 if (resumeEntity.Name.StartsWith("Check your file again"))
                 {
                     ModelState.AddModelError("", resumeEntity.Name);
@@ -149,10 +148,9 @@ namespace Resume.Controllers
         {
             if (string.IsNullOrWhiteSpace(section)) return section;
 
-            // Normalize bullet formatting
-            section = Regex.Replace(section, @"(?<=[^\n])-\s*", "\n-"); // Ensures each bullet starts on a new line
+            section = Regex.Replace(section, @"(?<=[^\n])-\s*", "\n-"); // Ensures each bullet - starts on a new line
 
-            // Strip any duplicate header within the body
+            // Removes any duplicate header
             section = Regex.Replace(section, $"{Regex.Escape(header)}:\\s*", "", RegexOptions.IgnoreCase);
 
             return section.Trim();
@@ -169,7 +167,7 @@ namespace Resume.Controllers
                 var trimmed = line.Trim();
                 if (trimmed.StartsWith("Name:", StringComparison.OrdinalIgnoreCase))
                 {
-                    var name = trimmed.Substring(5).Trim();
+                    var name = trimmed.Substring(5).Trim(); // remove name:
                     if (!string.IsNullOrWhiteSpace(name)) return name;
                 }
                 // If the first non-empty line looks like a name (no numbers, not too long)

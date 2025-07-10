@@ -77,7 +77,7 @@ Rules:
 Resume:
 {resumeText} ";
 
-            //    Create API Payload
+            //    Create API Payload - my data (resume)
 
             var requestPayload = new
             {
@@ -95,7 +95,7 @@ Resume:
 
             // Passes your prompt + API key
             var request = new HttpRequestMessage(HttpMethod.Post, "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent");
-            request.Headers.Add("x-goog-api-key", apiKey);
+            request.Headers.Add("x-goog-api-key", apiKey);// for authentication
             request.Content = new StringContent(JsonSerializer.Serialize(requestPayload), Encoding.UTF8, "application/json");
 
             var response = await _httpClient.SendAsync(request);
@@ -111,12 +111,12 @@ Resume:
 
             var content = await response.Content.ReadAsStringAsync();
             var json = JsonDocument.Parse(content);
-            var aiOutput = json.RootElement
+            var aiOutput = json.RootElement 
                 .GetProperty("candidates")[0]
                 .GetProperty("content")
                 .GetProperty("parts")[0]
                 .GetProperty("text")
-                .GetString();
+                .GetString(); // text response by ai
 
             return ParseFeedback(aiOutput, resumeText);
         }
@@ -136,16 +136,16 @@ Resume:
 
 
             // Extracts all lines between a given section header and the next section header
-            string ExtractBlock(string key, string[] allHeaders)
+            string ExtractBlock(string key, string[] allHeaders) // key = section
             {
                 var sb = new StringBuilder();
-                bool recording = false;
+                bool recording = false; // to check in which u are 
 
                 foreach (var line in lines)
                 {
                     var trimmed = line.Trim();
 
-                    // Stop if we reach a new section (but not the current key itself)
+                    // Stop if we reach a new section
                     if (allHeaders.Any(h => trimmed.StartsWith(h, StringComparison.OrdinalIgnoreCase)) &&
                         !trimmed.StartsWith(key, StringComparison.OrdinalIgnoreCase))
                     {

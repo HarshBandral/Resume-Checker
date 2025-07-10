@@ -20,20 +20,33 @@
             <button type="submit" class="btn btn-primary mt-3 w-100">Analyze</button>
         </form>
         <script>
-        function toggleInput(type) {
-            document.getElementById('fileInputDiv').style.display = type === 'file' ? '' : 'none';
-            document.getElementById('textInputDiv').style.display = type === 'text' ? '' : 'none';
-            document.getElementById('inputTypeHidden').value = type;
-        }
+            function toggleInput(type) {
+                document.getElementById('fileInputDiv').style.display = type === 'file' ? '' : 'none';
+                document.getElementById('textInputDiv').style.display = type === 'text' ? '' : 'none';
+                document.getElementById('inputTypeHidden').value = type;
+            }
         </script>
         @if (!ViewData.ModelState.IsValid)
         {
-            <div class="alert alert-danger mt-3">
+            <div id="validationAlert" class="alert alert-danger mt-3">
                 @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
                 {
                     <p>@error.ErrorMessage</p>
                 }
             </div>
+            
+            <script>
+                setTimeout(function () {
+                    var alertDiv = document.getElementById("validationAlert");
+                    if (alertDiv) {
+                        alertDiv.style.transition = "opacity 0.5s ease";
+                        alertDiv.style.opacity = "0";
+                        setTimeout(function () {
+                            alertDiv.remove();
+                        }, 500); // remove after fade
+                    }
+                }, 5000); // 5000 ms = 5 seconds
+            </script>
         }
     </div>
 </div>
@@ -72,7 +85,7 @@
                 @Html.HiddenFor(m => m.Strengths)
                 @Html.HiddenFor(m => m.Weaknesses)
                 @Html.HiddenFor(m => m.Suggestions)
-                @Html.HiddenFor(m => m.SuggestedRoles) 
+                @Html.HiddenFor(m => m.SuggestedRoles)
                 @Html.HiddenFor(m => m.UploadedFileName)
                 <button type="submit" class="btn btn-success">💾 Save</button>
             </form>
@@ -90,7 +103,27 @@
         </div>
     </div>
 }
+@* else if (Model != null && Model.Name != null && Model.Name.StartsWith("Check your resume again")) *@
+@* { *@
+@*     <div class="alert alert-danger text-center mt-4" style="font-size:1.2em;">@Model.Name</div> *@
+@* } *@
+
 else if (Model != null && Model.Name != null && Model.Name.StartsWith("Check your resume again"))
 {
-    <div class="alert alert-danger text-center mt-4" style="font-size:1.2em;">@Model.Name</div>
+    <div id="errorAlert" class="alert alert-danger text-center mt-4" style="font-size:1.2em;">
+        @Model.Name
+    </div>
+
+    <script>
+        setTimeout(function () {
+            var alertDiv = document.getElementById("errorAlert");
+            if (alertDiv) {
+                alertDiv.style.transition = "opacity 0.5s ease";
+                alertDiv.style.opacity = "0";
+                setTimeout(function () {
+                    alertDiv.remove();
+                }, 500); // remove after fade
+            }
+        }, 5000); // 5000 ms = 5 seconds
+    </script>
 }
